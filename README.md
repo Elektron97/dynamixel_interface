@@ -1,1 +1,2 @@
-# Dynamixel Package for ROS Noetic
+# Dynamixel Interface for Tendon-Driven Continuum Robots
+This package is a specialized version of the [ros_dynamixel_pkg](https://github.com/Elektron97/ros_dynamixel_pkg) repo for low-level control of tendon-driven continuum robots. In this version, the dynamixels are controlled in number of turns and they publish their current information.
