@@ -41,8 +41,8 @@ using namespace dynamixel;
 #define VELOCITY_MODE           1
 #define EXTENDED_POSITION_MODE  4
 #define CURRENT_POSITION_MODE   5
-#define PROFILE_VEL_VALUE       0   // Smoother Moves: 100
-#define PROFILE_ACC_VALUE       0   // Smoother Moves: 10
+#define PROFILE_VEL_VALUE       100   // Smoother Moves: 100
+#define PROFILE_ACC_VALUE       10   // Smoother Moves: 10
 
 // Data Length
 #define POSITION_BYTE           4
