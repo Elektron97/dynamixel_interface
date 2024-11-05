@@ -1,7 +1,7 @@
 #ifndef EXTPOS_DYNAMIXEL_H_
 #define EXTPOS_DYNAMIXEL_H_
 
-#include "ros_dynamixel_pkg/dynamixel_motors.h"
+#include "dynamixel_interface/dynamixel_motors.h"
 
 #define DISABLE_TORQUE_REQUEST -1
 

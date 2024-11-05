@@ -1,4 +1,4 @@
-#include "ros_dynamixel_pkg/extpos_dynamixel.h"
+#include "dynamixel_interface/extpos_dynamixel.h"
 
 // --- Extended Position Dynamixel Class --- //
 ExtPos_Dynamixel::ExtPos_Dynamixel(int n_motors)

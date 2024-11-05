@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(ros_dynamixel_pkg)
+project(dynamixel_interface)
 
 find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
@@ -25,7 +25,7 @@ include_directories(
 add_library(abstract_dyna src/dynamixel_motors.cpp)
 target_link_libraries(abstract_dyna ${catkin_LIBRARIES})
 
-add_library(${PROJECT_NAME} src/extpos_dynamixel.cpp src/current_dynamixel.cpp src/velocity_dynamixel.cpp)
+add_library(${PROJECT_NAME} src/extpos_dynamixel.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} abstract_dyna)
 
 #### Export Library ####

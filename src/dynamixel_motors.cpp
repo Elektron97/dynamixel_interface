@@ -2,7 +2,7 @@
  * Source code for Dynamixel Library    *
  ****************************************/
 // Include
-#include "ros_dynamixel_pkg/dynamixel_motors.h"
+#include "dynamixel_interface/dynamixel_motors.h"
 
 // Implementation in the header due to template synatx
 /**************************************************************************/
