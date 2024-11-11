@@ -24,7 +24,7 @@ void Ros_Dynamixel_Node::turns_callBack(const std_msgs::Float32MultiArray::Const
     if(msg->data.size() == N_MOTORS)
     {
         //Extract array of torques
-        if(dyna_obj.set_turns_disable(msg->data))
+        if(dyna_obj.set_turns(msg->data))
             ROS_INFO("Turns command written correctly on Dynamixels.");
         else
         {

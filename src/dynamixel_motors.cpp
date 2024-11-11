@@ -33,22 +33,13 @@ bool registerCur_saturation(int16_t &register_value)
 
 bool turns_saturation(float &turn) 
 {
-    // No need of sign function, because is only positive values
-    if(turn > MAX_TURNS)
+    if(abs(turn) > MAX_TURNS)
     {
-        turn = MAX_TURNS;
-        return false;
-    }
-    // No negative turns
-    else if (turn < 0)
-    {
-        turn = 0.0;
+        turn = sign(turn)*MAX_TURNS;
         return false;
     }
     else
-    {
         return true;
-    }
 }
 
 float sign(float x)
