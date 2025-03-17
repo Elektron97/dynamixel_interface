@@ -61,7 +61,7 @@ using namespace dynamixel;
 
 #define MAX_CURRENT_REGISTER    1193            // uint16_t | Max value in the current Register. Corresponds to MAX_CURRENT.
 #define ONE_TURN_REGISTER       4095            // uint16_t | Position value that corrisponds to only one turn
-#define MAX_TURNS               5.0             // float    | Max Turns
+#define MAX_TURNS               3.0             // float    | Max Turns
 #define MAX_VELOCITY_REGISTER   1023            // uint32_t
 
 // Mapping Torque - Current
