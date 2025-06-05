@@ -41,8 +41,8 @@ using namespace dynamixel;
 #define VELOCITY_MODE           1
 #define EXTENDED_POSITION_MODE  4
 #define CURRENT_POSITION_MODE   5
-#define PROFILE_VEL_VALUE       0   // Smoother Moves: 100
-#define PROFILE_ACC_VALUE       0   // Smoother Moves: 10
+#define PROFILE_VEL_VALUE       100   // Smoother Moves: 100
+#define PROFILE_ACC_VALUE       10   // Smoother Moves: 10
 
 // Data Length
 #define POSITION_BYTE           4
@@ -61,7 +61,7 @@ using namespace dynamixel;
 
 #define MAX_CURRENT_REGISTER    1193            // uint16_t | Max value in the current Register. Corresponds to MAX_CURRENT.
 #define ONE_TURN_REGISTER       4095            // uint16_t | Position value that corrisponds to only one turn
-#define MAX_TURNS               5.0             // float    | Max Turns
+#define MAX_TURNS               3.0             // float    | Max Turns
 #define MAX_VELOCITY_REGISTER   1023            // uint32_t
 
 // Mapping Torque - Current

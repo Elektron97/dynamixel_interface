@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros_dynamixel_pkg</name>
+  <name>dynamixel_interface</name>
   <version>0.0.0</version>
-  <description>The ros_dynamixel_pkg package</description>
+  <description>The dynamixel_interface package</description>
 
   <maintainer email="legion_rospc@todo.todo">legion_rospc</maintainer>
 
