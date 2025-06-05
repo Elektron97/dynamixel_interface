@@ -1,4 +1,4 @@
-#include "ros_dynamixel_pkg/current_dynamixel.h"
+#include "dynamixel_interface/current_dynamixel.h"
 
 // --- Current Dynamixel Class --- //
 Current_Dynamixel::Current_Dynamixel(int n_dyna)

@@ -1,7 +1,7 @@
 #ifndef CURRENT_DYNAMIXEL_H_
 #define CURRENT_DYNAMIXEL_H_
 
-#include "ros_dynamixel_pkg/dynamixel_motors.h"
+#include "dynamixel_interface/dynamixel_motors.h"
 
 // Current Dynamixel
 class Current_Dynamixel: public Dynamixel_Motors<int16_t>
