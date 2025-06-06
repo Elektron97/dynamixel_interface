@@ -28,13 +28,19 @@ target_link_libraries(abstract_dyna ${catkin_LIBRARIES})
 add_library(ext_pos src/extpos_dynamixel.cpp)
 target_link_libraries(ext_pos ${catkin_LIBRARIES} abstract_dyna)
 
+add_library(current src/current_dynamixel.cpp)
+target_link_libraries(current ${catkin_LIBRARIES} abstract_dyna)
+
 add_library(${PROJECT_NAME} src/ros_utils.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ext_pos)
+
+add_library(current_node src/current_node.cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} current)
 
 #### Execs ####
 # Hardware IO Node
 add_executable(motor_io src/motor_io.cpp)
-target_link_libraries(motor_io ${catkin_LIBRARIES} ${PROJECT_NAME})
+target_link_libraries(motor_io ${catkin_LIBRARIES} current_node)
 
 #### Export Library ####
 install(

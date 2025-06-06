@@ -73,6 +73,7 @@ using namespace dynamixel;
 // Functions
 int16_t current2Register(float current_value);
 float   register2Current(int16_t register_value);
+float   register2Torque(int16_t register_value);
 bool    registerCur_saturation(int16_t &register_value);
 bool    turns_saturation(float &turn);
 float   current2Torque(float current);
