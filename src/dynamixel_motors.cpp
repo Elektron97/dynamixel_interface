@@ -58,9 +58,24 @@ float torque2Current(float torque)
     return COEFF_2*torque*torque + COEFF_1*torque + COEFF_0;
 }
 
+float current2Torque(float current)
+{
+    // Inverse Solution of: 
+    // COEFF_2*torque^2 + COEFF_1*torque + COEFF_0
+    float torque_abs = -(COEFF_1 - sqrt(COEFF_1*COEFF_1 - 4*COEFF_0*COEFF_2 + 4*COEFF_2*abs(current)))/(2*COEFF_2);
+
+    // Sign correction
+    return sign(current)*torque_abs; // return in [Nm]
+}
+
 int16_t torque2Register(float torque)
 {
     return current2Register(torque2Current(torque));
+}
+
+float register2Torque(int16_t register_value)
+{
+    return current2Torque(register2Current(register_value));
 }
 
 int32_t velocity2Register(float velocity_value)

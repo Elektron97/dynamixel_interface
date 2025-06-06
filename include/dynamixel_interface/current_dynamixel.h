@@ -25,9 +25,10 @@ class Current_Dynamixel: public Dynamixel_Motors<int16_t>
         bool set_currents(std::vector<float> currents);             // Overwrite (vector<T>)
         bool get_currents(std::vector<float>& currents);
 
-        // High Level Set: Torque   
+        // High Level Set/Get: Torque   
         bool set_torques(float torques[]);
         bool set_torques(std::vector<float> torques);               // Overwrite (vector<T>)
+        bool get_torques(std::vector<float>& torques);
 
         // Power Off Functions
         bool set2Zeros();
