@@ -32,6 +32,8 @@ class Current_Dynamixel: public Dynamixel_Motors<int16_t>
 
         // Power Off Functions
         bool set2Zeros();
+        void enableTorque();
+        void disableTorque();
 };
 
 #endif /* CURRENT_DYNAMIXEL_H_ */

@@ -361,3 +361,36 @@ bool Current_Dynamixel::set_torques(std::vector<float> torques)
 
     return set2registers(registers);
 }
+
+void Current_Dynamixel::disableTorque()
+{
+    i = 0;
+    for(i; i < n_motors; i++) // Supposing that Motors idx are from 1 to n_motors
+    {
+        // Enable Torque
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to enable torque for Dynamixel ID %d", i+1);
+            break;
+        }
+    }
+}
+
+// bool enableTorque();
+void Current_Dynamixel::enableTorque()
+{
+    i = 0;
+    for(i; i < n_motors; i++) // Supposing that Motors idx are from 1 to n_motors
+    {
+        // Enable Torque
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to enable torque for Dynamixel ID %d", i+1);
+            break;
+        }
+    }
+}
+
+

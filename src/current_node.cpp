@@ -40,6 +40,21 @@ void Ros_Dynamixel_Node::torque_callBack(const std_msgs::Float32MultiArray::Cons
     }
 }
 
+bool Ros_Dynamixel_Node::torque_server(std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res)
+{
+    // Enable or Disable Torque
+    if(req.data)
+        dyna_obj.enableTorque();
+    else
+        dyna_obj.disableTorque();
+
+    // Response
+    res.success = true;
+    res.message = "Torques switched successfully.";
+
+    return true;
+}
+
 void Ros_Dynamixel_Node::publish_currents()
 {
     vector<float> currents(N_MOTORS);
