@@ -9,12 +9,12 @@
 // --- Functions --- //
 int16_t current2Register(float current_value)
 {
-    return MAX_CURRENT_REGISTER*((int16_t) (current_value/MAX_CURRENT));
+    return (int16_t)((current_value / MAX_CURRENT) * MAX_CURRENT_REGISTER);
 }
 
 float register2Current(int16_t register_value)
 {
-    return MAX_CURRENT*(((float) register_value)/ ((float) MAX_CURRENT_REGISTER));
+    return MAX_CURRENT * ((float)register_value / MAX_CURRENT_REGISTER);
 }
 
 bool registerCur_saturation(int16_t &register_value) 

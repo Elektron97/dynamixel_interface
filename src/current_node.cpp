@@ -18,13 +18,14 @@ Ros_Dynamixel_Node::~Ros_Dynamixel_Node()
 
 void Ros_Dynamixel_Node::torque_callBack(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    ROS_INFO("Turns command received.");
+    ROS_INFO("Torques command received.");
 
     // Verify n of motors
     if(msg->data.size() == N_MOTORS)
     {
         //Extract array of torques
-        if(dyna_obj.set_torques(msg->data))
+        // if(dyna_obj.set_torques(msg->data))
+        if(dyna_obj.set_currents(msg->data))
             ROS_INFO("Torques command written correctly on Dynamixels.");
         else
         {
