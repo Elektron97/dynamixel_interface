@@ -374,6 +374,14 @@ void Current_Dynamixel::disableTorque()
             ROS_ERROR("Failed to enable torque for Dynamixel ID %d", i+1);
             break;
         }
+
+        // LED
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_LED, LED_OFF, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to turn on LED for Dynamixel ID %d", i+1);
+            break;
+        }
     }
 }
 
@@ -388,6 +396,14 @@ void Current_Dynamixel::enableTorque()
         if (dxl_comm_result != COMM_SUCCESS) 
         {
             ROS_ERROR("Failed to enable torque for Dynamixel ID %d", i+1);
+            break;
+        }
+
+        // LED
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_LED, LED_ON, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to turn on LED for Dynamixel ID %d", i+1);
             break;
         }
     }
