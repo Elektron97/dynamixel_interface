@@ -31,11 +31,11 @@ target_link_libraries(ext_pos ${catkin_LIBRARIES} abstract_dyna)
 add_library(current src/current_dynamixel.cpp)
 target_link_libraries(current ${catkin_LIBRARIES} abstract_dyna)
 
-add_library(${PROJECT_NAME} src/ros_utils.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ext_pos)
+# add_library(${PROJECT_NAME} src/ros_utils.cpp)
+# target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ext_pos)
 
 add_library(current_node src/current_node.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} current)
+target_link_libraries(current_node ${catkin_LIBRARIES} current)
 
 #### Execs ####
 # Hardware IO Node
@@ -43,14 +43,14 @@ add_executable(motor_io src/motor_io.cpp)
 target_link_libraries(motor_io ${catkin_LIBRARIES} current_node)
 
 #### Export Library ####
-install(
-  TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-)
+# install(
+#   TARGETS ${PROJECT_NAME}
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+# )
 
-install(
-  DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
+# install(
+#   DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+# )
