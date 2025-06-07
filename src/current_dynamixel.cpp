@@ -39,7 +39,6 @@ Current_Dynamixel::Current_Dynamixel(int n_dyna)
             break;
         }
 
-        // In theroy NOT needed
         // // Profile Velocity
         // dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, i + 1, ADDR_PROFILE_VEL, PROFILE_VEL_VALUE, &dxl_error);
         // if (dxl_comm_result != COMM_SUCCESS) 
@@ -60,6 +59,10 @@ Current_Dynamixel::Current_Dynamixel(int n_dyna)
     // Set Current to Zero in every motors
     if(!set2Zeros())
         ROS_ERROR("Failed to set all the torques to zero.");
+
+    // Read Initial Position
+    if(!get_PosRegisters(initial_positions))
+        ROS_ERROR("Failed to read all initial positions of the motors.");
 }
 
 bool Current_Dynamixel::set2Zeros()
@@ -260,6 +263,45 @@ bool Current_Dynamixel::get_CurRegisters(std::vector<int16_t>& currents)
     }
 }
 
+bool Current_Dynamixel::get_PosRegisters(std::vector<int32_t>& positions)
+{
+    dxl_error = 0;
+    dxl_comm_result = COMM_TX_FAIL;
+    int dxl_addparam_result = false;
+
+    // Add all motors' id
+    i = 1;
+    for(i; i <= n_motors; i++)
+    {
+        // Supposing that Motors ID are 1, 2, 3, 4, ..., n_motors
+        dxl_addparam_result = position_syncRead.addParam((uint8_t) i);
+        if (dxl_addparam_result != true) 
+        {
+            ROS_ERROR("Failed to addparam to groupSyncRead for Dynamixel ID %d", i);
+            break;
+        }
+    }
+
+    // Read all motors
+    dxl_comm_result = position_syncRead.txRxPacket();
+    if(dxl_comm_result == COMM_SUCCESS)
+    {
+        for(i = 1; i <= n_motors; i++)
+        {
+            positions.push_back(position_syncRead.getData((uint8_t) i, ADDR_PRESENT_POSITION, POSITION_BYTE));
+        }
+
+        position_syncRead.clearParam();
+        return true;
+    }
+    else
+    {
+        ROS_ERROR("Failed to get positions! Result: %d", dxl_comm_result);
+        position_syncRead.clearParam();
+        return false;       
+    }
+}
+
 bool Current_Dynamixel::set_currents(float currents[])
 {
     int16_t registers[n_motors];
@@ -336,6 +378,28 @@ bool Current_Dynamixel::get_torques(std::vector<float>& torques)
         for(i = 0; i < n_motors; i++)
         {
             torques[i] = register2Torque(current_registers[i]); 
+        }
+
+        return true;
+    }
+    else
+    {
+        // Stop and get false
+        return false;
+    }
+}
+
+bool Current_Dynamixel::get_turns(std::vector<float>& turns)
+{
+    // Local Variable useful to convert
+    std::vector<int32_t> read_positions;
+    
+    if(get_PosRegisters(read_positions))
+    {
+        // Convert
+        for(i = 0; i < n_motors; i++)
+        {
+            turns[i] = register2Turns(read_positions[i], initial_positions[i]); 
         }
 
         return true;

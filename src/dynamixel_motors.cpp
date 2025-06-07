@@ -31,6 +31,11 @@ bool registerCur_saturation(int16_t &register_value)
     }
 }
 
+float register2Turns(int32_t register_value, int32_t initial_position)
+{
+    return ( (float) (register_value - initial_position)/ (float) ONE_TURN_REGISTER);
+}
+
 bool turns_saturation(float &turn) 
 {
     if(abs(turn) > MAX_TURNS)
