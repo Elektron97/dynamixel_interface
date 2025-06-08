@@ -50,6 +50,13 @@ class ExtPos_Dynamixel: public Dynamixel_Motors<int32_t>
         // Power Off Functions
         bool set2Zeros();
 
+        // Enable/Disable Torque
+        void enableTorque();
+        void disableTorque();
+
+        // Update Init Pos
+        bool update_initPos();
+
         // Check if all the motors are turned off
         bool is_allOFF();
 };

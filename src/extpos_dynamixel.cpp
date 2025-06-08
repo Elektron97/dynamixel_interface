@@ -103,6 +103,45 @@ bool ExtPos_Dynamixel::get_PosRegisters(std::vector<int32_t>& positions)
     }
 }
 
+bool ExtPos_Dynamixel::update_initPos()
+{
+    dxl_error = 0;
+    dxl_comm_result = COMM_TX_FAIL;
+    int dxl_addparam_result = false;
+
+    // Add all motors' id
+    i = 1;
+    for(i; i <= n_motors; i++)
+    {
+        // Supposing that Motors ID are 1, 2, 3, 4, ..., n_motors
+        dxl_addparam_result = position_syncRead.addParam((uint8_t) i);
+        if (dxl_addparam_result != true) 
+        {
+            ROS_ERROR("Failed to addparam to groupSyncRead for Dynamixel ID %d", i);
+            break;
+        }
+    }
+
+    // Read all motors
+    dxl_comm_result = position_syncRead.txRxPacket();
+    if(dxl_comm_result == COMM_SUCCESS)
+    {
+        for(i = 1; i <= n_motors; i++)
+        {
+            initial_positions[i] = position_syncRead.getData((uint8_t) i, ADDR_PRESENT_POSITION, POSITION_BYTE);
+        }
+
+        position_syncRead.clearParam();
+        return true;
+    }
+    else
+    {
+        ROS_ERROR("Failed to get positions! Result: %d", dxl_comm_result);
+        position_syncRead.clearParam();
+        return false;       
+    }
+}
+
 bool ExtPos_Dynamixel::get_CurRegisters(std::vector<int16_t>& currents)
 {
     dxl_error = 0;
@@ -453,6 +492,56 @@ bool ExtPos_Dynamixel::set2Zeros()
         motors_syncWrite.clearParam();
         return false;
     }
+}
+
+void ExtPos_Dynamixel::disableTorque()
+{
+    i = 0;
+    for(i; i < n_motors; i++) // Supposing that Motors idx are from 1 to n_motors
+    {
+        // Enable Torque
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_TORQUE_ENABLE, TORQUE_DISABLE, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to enable torque for Dynamixel ID %d", i+1);
+            break;
+        }
+
+        // LED
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_LED, LED_OFF, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to turn on LED for Dynamixel ID %d", i+1);
+            break;
+        }
+    }
+}
+
+void ExtPos_Dynamixel::enableTorque()
+{
+    i = 0;
+    for(i; i < n_motors; i++) // Supposing that Motors idx are from 1 to n_motors
+    {
+        // Enable Torque
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to enable torque for Dynamixel ID %d", i+1);
+            break;
+        }
+
+        // LED
+        dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, i + 1, ADDR_LED, LED_ON, &dxl_error);
+        if (dxl_comm_result != COMM_SUCCESS) 
+        {
+            ROS_ERROR("Failed to turn on LED for Dynamixel ID %d", i+1);
+            break;
+        }
+    }
+
+    // Update Initial Position (ONLY in Torque Enable)
+    if(!update_initPos())
+        ROS_ERROR("Failed to update all initial positions of the motors.");
 }
 
 bool ExtPos_Dynamixel::is_allOFF()

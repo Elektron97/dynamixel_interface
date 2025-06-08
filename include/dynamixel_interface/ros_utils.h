@@ -13,6 +13,9 @@
 // msgs
 #include "std_msgs/Float32MultiArray.h"
 
+// srv
+#include "std_srvs/SetBool.h"
+
 // --- Define --- //
 #define NODE_FREQUENCY  10.0    // [Hz] Max publish rate is ~31 Hz
 #define QUEUE_SIZE      10
@@ -25,6 +28,7 @@ using namespace std;        // std io
 const string topic_tag = "/dynamixels";
 const string turns_topic_name = "/cmd_turns";
 const string current_topic_name = "/read_currents";
+const string torque_srv_name = "/switch_torque";
 
 // ---  Function Signatures --- //
 
@@ -37,6 +41,9 @@ class Ros_Dynamixel_Node
     ros::Subscriber turns_sub   = node_handle.subscribe(topic_tag + turns_topic_name, QUEUE_SIZE, &Ros_Dynamixel_Node::turns_callBack, this);
     ros::Publisher current_pub  = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + current_topic_name, QUEUE_SIZE);
 
+    // Service
+    ros::ServiceServer torque_srv = node_handle.advertiseService(torque_srv_name, &Ros_Dynamixel_Node::torque_server, this); 
+
     // Timer
     ros::Timer timer_obj        = node_handle.createTimer(ros::Duration(1/NODE_FREQUENCY), &Ros_Dynamixel_Node::main_loop, this);
 
@@ -48,6 +55,7 @@ class Ros_Dynamixel_Node
 
     // Callbacks
     void turns_callBack(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    bool torque_server(std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res);
     
     public:
         // Constructor
