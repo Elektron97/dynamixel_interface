@@ -42,6 +42,11 @@ bool turns_saturation(float &turn)
         return true;
 }
 
+float register2Turns(int32_t register_value, int32_t initial_position)
+{
+    return ( (float) (register_value - initial_position)/ (float) ONE_TURN_REGISTER);
+}
+
 float sign(float x)
 {
     /*SIGN FUNCTION:*/

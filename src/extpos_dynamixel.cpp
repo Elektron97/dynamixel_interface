@@ -203,6 +203,28 @@ bool ExtPos_Dynamixel::get_currents(std::vector<float>& currents)
     }
 }
 
+bool ExtPos_Dynamixel::get_turns(std::vector<float>& turns)
+{
+    // Local Variable useful to convert
+    std::vector<int32_t> read_positions;
+    
+    if(get_PosRegisters(read_positions))
+    {
+        // Convert
+        for(i = 0; i < n_motors; i++)
+        {
+            turns[i] = register2Turns(read_positions[i], initial_positions[i]); 
+        }
+
+        return true;
+    }
+    else
+    {
+        // Stop and get false
+        return false;
+    }
+}
+
 bool ExtPos_Dynamixel::set2registers(int32_t registers[])
 {
     // Error Handling

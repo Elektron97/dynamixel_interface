@@ -77,6 +77,7 @@ bool    registerCur_saturation(int16_t &register_value);
 bool    turns_saturation(float &turn);
 float   torque2Current(float current);
 int16_t torque2Register(float torque);
+float register2Turns(int32_t register_value, int32_t initial_position);
 float   sign(float x);
 int32_t velocity2Register(float velocity_value);
 

@@ -7,7 +7,7 @@
 Ros_Dynamixel_Node::Ros_Dynamixel_Node()
 {
     // Init FloatMultiArray
-    motor_currents.data = vector<float>(N_MOTORS);
+    motor_turns.data = vector<float>(N_MOTORS);
 }
 
 Ros_Dynamixel_Node::~Ros_Dynamixel_Node()
@@ -54,24 +54,41 @@ bool Ros_Dynamixel_Node::torque_server(std_srvs::SetBool::Request& req, std_srvs
     return true;
 }
 
-void Ros_Dynamixel_Node::publish_currents()
+// void Ros_Dynamixel_Node::publish_currents()
+// {
+//     vector<float> currents(N_MOTORS);
+//     if(!dyna_obj.get_currents(currents))
+//     {
+//         ROS_ERROR("Failed to read currents.");
+//         return;
+//     }
+//     else
+//     {
+//         motor_currents.data = currents;
+//         // Publish only if the reading is ok
+//         current_pub.publish(motor_currents);
+//     }
+// }
+
+void Ros_Dynamixel_Node::publish_turns()
 {
-    vector<float> currents(N_MOTORS);
-    if(!dyna_obj.get_currents(currents))
+    vector<float> turns(N_MOTORS);
+    if(!dyna_obj.get_turns(turns))
     {
         ROS_ERROR("Failed to read currents.");
         return;
     }
     else
     {
-        motor_currents.data = currents;
+        motor_turns.data = turns;
         // Publish only if the reading is ok
-        current_pub.publish(motor_currents);
+        turns_pub.publish(motor_turns);
     }
 }
 
 void Ros_Dynamixel_Node::main_loop(const ros::TimerEvent& event)
 {
     // Publish /read_currents
-    publish_currents();
+    // publish_currents();
+    publish_turns();
 }

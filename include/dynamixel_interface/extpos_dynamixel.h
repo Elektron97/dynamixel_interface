@@ -46,6 +46,7 @@ class ExtPos_Dynamixel: public Dynamixel_Motors<int32_t>
 
         // Mid Level Get: Current
         bool get_currents(std::vector<float>& currents);
+        bool get_turns(std::vector<float>& turns);
 
         // Power Off Functions
         bool set2Zeros();

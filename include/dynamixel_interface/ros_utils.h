@@ -28,6 +28,7 @@ using namespace std;        // std io
 const string topic_tag = "/dynamixels";
 const string turns_topic_name = "/cmd_turns";
 const string current_topic_name = "/read_currents";
+const string feedback_turns_topic_name = "/read_turns";
 const string torque_srv_name = "/switch_torque";
 
 // ---  Function Signatures --- //
@@ -39,7 +40,8 @@ class Ros_Dynamixel_Node
     ros::NodeHandle node_handle;
     // Sub & Pub objects
     ros::Subscriber turns_sub   = node_handle.subscribe(topic_tag + turns_topic_name, QUEUE_SIZE, &Ros_Dynamixel_Node::turns_callBack, this);
-    ros::Publisher current_pub  = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + current_topic_name, QUEUE_SIZE);
+    // ros::Publisher current_pub  = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + current_topic_name, QUEUE_SIZE);
+    ros::Publisher turns_pub  = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + feedback_turns_topic_name, QUEUE_SIZE);
 
     // Service
     ros::ServiceServer torque_srv = node_handle.advertiseService(torque_srv_name, &Ros_Dynamixel_Node::torque_server, this); 
@@ -51,7 +53,8 @@ class Ros_Dynamixel_Node
     ExtPos_Dynamixel dyna_obj   = ExtPos_Dynamixel(N_MOTORS);
 
     // Useful Variables
-    std_msgs::Float32MultiArray motor_currents;
+    // std_msgs::Float32MultiArray motor_currents;
+    std_msgs::Float32MultiArray motor_turns;
 
     // Callbacks
     void turns_callBack(const std_msgs::Float32MultiArray::ConstPtr& msg);
@@ -65,7 +68,8 @@ class Ros_Dynamixel_Node
         ~Ros_Dynamixel_Node();
 
         // Publisher
-        void publish_currents();
+        // void publish_currents();
+        void publish_turns();
 
         // Main Loop
         void main_loop(const ros::TimerEvent& event);
