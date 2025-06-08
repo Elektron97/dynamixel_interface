@@ -302,6 +302,45 @@ bool Current_Dynamixel::get_PosRegisters(std::vector<int32_t>& positions)
     }
 }
 
+bool Current_Dynamixel::update_initPos()
+{
+    dxl_error = 0;
+    dxl_comm_result = COMM_TX_FAIL;
+    int dxl_addparam_result = false;
+
+    // Add all motors' id
+    i = 1;
+    for(i; i <= n_motors; i++)
+    {
+        // Supposing that Motors ID are 1, 2, 3, 4, ..., n_motors
+        dxl_addparam_result = position_syncRead.addParam((uint8_t) i);
+        if (dxl_addparam_result != true) 
+        {
+            ROS_ERROR("Failed to addparam to groupSyncRead for Dynamixel ID %d", i);
+            break;
+        }
+    }
+
+    // Read all motors
+    dxl_comm_result = position_syncRead.txRxPacket();
+    if(dxl_comm_result == COMM_SUCCESS)
+    {
+        for(i = 1; i <= n_motors; i++)
+        {
+            initial_positions[i] = position_syncRead.getData((uint8_t) i, ADDR_PRESENT_POSITION, POSITION_BYTE);
+        }
+
+        position_syncRead.clearParam();
+        return true;
+    }
+    else
+    {
+        ROS_ERROR("Failed to get positions! Result: %d", dxl_comm_result);
+        position_syncRead.clearParam();
+        return false;       
+    }
+}
+
 bool Current_Dynamixel::set_currents(float currents[])
 {
     int16_t registers[n_motors];
@@ -471,6 +510,10 @@ void Current_Dynamixel::enableTorque()
             break;
         }
     }
+
+    // Update Initial Position (ONLY in Torque Enable)
+    if(!update_initPos())
+        ROS_ERROR("Failed to update all initial positions of the motors.");
 }
 
 

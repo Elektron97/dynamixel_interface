@@ -25,6 +25,9 @@ class Current_Dynamixel: public Dynamixel_Motors<int16_t>
         bool get_CurRegisters(std::vector<int16_t>& currents);
         // Low Level Get: Register
         bool get_PosRegisters(std::vector<int32_t>& positions);
+
+        // Initial Position
+        bool update_initPos();
         
         // Mid Level Set/Get: Current
         bool set_currents(float currents[]);
