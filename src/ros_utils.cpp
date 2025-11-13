@@ -13,7 +13,7 @@ Ros_Dynamixel_Node::Ros_Dynamixel_Node()
 Ros_Dynamixel_Node::~Ros_Dynamixel_Node()
 {
     // Deconstructor
-    ROS_INFO("Turning OFF all the motors."); 
+    ROS_INFO("Turning OFF all the motors. "); 
 }
 
 void Ros_Dynamixel_Node::turns_callBack(const std_msgs::Float32MultiArray::ConstPtr& msg)
