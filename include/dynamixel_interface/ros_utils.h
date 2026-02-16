@@ -17,7 +17,7 @@
 #include "std_srvs/SetBool.h"
 
 // --- Define --- //
-#define NODE_FREQUENCY  10.0    // [Hz] Max publish rate is ~31 Hz
+#define NODE_FREQUENCY  30.0    // [Hz] Max publish rate is ~31 Hz
 #define QUEUE_SIZE      10
 #define N_MOTORS        7
 
