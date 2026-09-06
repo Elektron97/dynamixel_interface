@@ -1,0 +1,26 @@
+<launch>
+
+  <!--
+    command_mode: "current" | "turns" | "current_position"
+      current           -> commands motors by current [A] on /dynamixels/cmd_currents
+                            (also accepts torque [Nm] on /dynamixels/cmd_torques)
+      turns             -> commands motors by turn count on /dynamixels/cmd_turns, no torque ceiling
+      current_position  -> commands turns like above, but caps the position controller's
+                            torque at current_limit (see below) - use this on a tendon-driven
+                            robot to avoid overtensioning on contact/stall
+  -->
+  <arg name="command_mode"  default="current"/>
+
+  <!--
+    current_limit [A]: torque ceiling for command_mode="current_position", written once at
+    startup as Goal Current. Ignored in the other two modes. Keep this at or below the
+    servo's rated MAX_CURRENT (3.209 A for the XM430-W210).
+  -->
+  <arg name="current_limit" default="1.5"/>
+
+  <node name="motor_io" pkg="dynamixel_interface" type="motor_io" output="screen">
+    <param name="command_mode"  value="$(arg command_mode)"/>
+    <param name="current_limit" value="$(arg current_limit)"/>
+  </node>
+
+</launch>
