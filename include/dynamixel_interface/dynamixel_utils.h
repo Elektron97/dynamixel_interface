@@ -68,7 +68,7 @@ using namespace dynamixel;
 
 #define MAX_CURRENT_REGISTER    1193            // uint16_t | Max value in the current Register. Corresponds to MAX_CURRENT.
 #define ONE_TURN_REGISTER       4096            // uint16_t | Register counts per one full revolution (XM430-W210 encoder resolution).
-#define MAX_TURNS               3.0             // float    | Max Turns
+#define MAX_TURNS               3.0             // float    | Default Max Turns (overridable at runtime, see ~max_turns)
 #define MAX_VELOCITY_REGISTER   1023            // uint32_t
 
 // Mapping Torque - Current
@@ -83,7 +83,7 @@ float   register2Current(int16_t register_value);
 bool    registerCur_saturation(int16_t &register_value);
 
 float   register2Turns(int32_t register_value, int32_t initial_position);
-bool    turns_saturation(float &turn);
+bool    turns_saturation(float &turn, float max_turns = MAX_TURNS);
 
 float   sign(float x);
 

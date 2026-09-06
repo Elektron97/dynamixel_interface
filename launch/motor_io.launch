@@ -18,9 +18,17 @@
   -->
   <arg name="current_limit" default="1.5"/>
 
+  <!--
+    max_turns: cap on the magnitude of a commanded turn count for
+    command_mode="turns"|"current_position" (ignored in "current"). Defaults to
+    MAX_TURNS (dynamixel_utils.h) if unset.
+  -->
+  <arg name="max_turns" default="3.0"/>
+
   <node name="motor_io" pkg="dynamixel_interface" type="motor_io" output="screen">
     <param name="command_mode"  value="$(arg command_mode)"/>
     <param name="current_limit" value="$(arg current_limit)"/>
+    <param name="max_turns"     value="$(arg max_turns)"/>
   </node>
 
 </launch>

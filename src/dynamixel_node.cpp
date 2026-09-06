@@ -56,6 +56,24 @@ namespace
         return (float) limit;
     }
 
+    // Reads the "~max_turns" private param, only meaningful for CommandMode::TURNS/
+    // CURRENT_POSITION, where it caps the magnitude of a commanded turn count.
+    // Defaults to MAX_TURNS if unset.
+    float resolveMaxTurns()
+    {
+        ros::NodeHandle private_nh("~");
+        double max_turns;
+        private_nh.param<double>("max_turns", max_turns, (double) MAX_TURNS);
+
+        if(max_turns <= 0.0)
+        {
+            ROS_WARN("~max_turns (%.3f) must be positive; defaulting to %.3f.", max_turns, MAX_TURNS);
+            max_turns = MAX_TURNS;
+        }
+
+        return (float) max_turns;
+    }
+
     const char* modeName(CommandMode mode)
     {
         switch(mode)
@@ -71,7 +89,7 @@ namespace
 // --- ROS DYNAMIXEL NODE CLASS --- //
 Ros_Dynamixel_Node::Ros_Dynamixel_Node()
     : mode(resolveCommandMode())
-    , dyna_obj(N_MOTORS, mode, resolveCurrentLimit(mode))
+    , dyna_obj(N_MOTORS, mode, resolveCurrentLimit(mode), resolveMaxTurns())
 {
     // Command Subscriber: topic name follows the configured mode (both TURNS
     // and CURRENT_POSITION are commanded by turn count), so the node

@@ -33,11 +33,11 @@ float register2Turns(int32_t register_value, int32_t initial_position)
     return ((float) (register_value - initial_position) / (float) ONE_TURN_REGISTER);
 }
 
-bool turns_saturation(float &turn)
+bool turns_saturation(float &turn, float max_turns)
 {
-    if(std::fabs(turn) > MAX_TURNS)
+    if(std::fabs(turn) > max_turns)
     {
-        turn = sign(turn) * MAX_TURNS;
+        turn = sign(turn) * max_turns;
         return false;
     }
     else

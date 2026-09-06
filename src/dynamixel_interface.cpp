@@ -26,10 +26,11 @@ namespace
 }
 
 // --- Constructor --- //
-DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, float current_limit_amps)
+DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, float current_limit_amps, float max_turns_val)
 {
     n_motors = n_dyna;
     mode = command_mode;
+    max_turns = max_turns_val;
     motor_ready.assign(n_motors, false);
 
     uint8_t op_mode;
@@ -248,7 +249,7 @@ bool DynamixelInterface::set_command(const std::vector<float>& cmd)
     for(int i = 0; i < n_motors; i++)
     {
         float turn = cmd[i];
-        if(!turns_saturation(turn))
+        if(!turns_saturation(turn, max_turns))
             ROS_WARN("Commanded turns for Dynamixel ID %d is out of limits. Saturating...", i + 1);
         registers[i] = (int32_t)(turn * (float) ONE_TURN_REGISTER) + initial_positions[i];
     }

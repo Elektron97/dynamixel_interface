@@ -55,6 +55,10 @@ class DynamixelInterface
         // Zero-turn reference, latched at construction and re-latched by enableTorque()
         std::vector<int32_t> initial_positions;
 
+        // Turns saturation limit (only meaningful for TURNS/CURRENT_POSITION), set
+        // once at construction from the "~max_turns" ROS param (default MAX_TURNS).
+        float max_turns = MAX_TURNS;
+
         // Per-motor bring-up status (did every init write for this motor succeed?)
         std::vector<bool> motor_ready;
 
@@ -80,7 +84,9 @@ class DynamixelInterface
         // current_limit_amps is only meaningful for CommandMode::CURRENT_POSITION,
         // where it's written once (as Goal Current, a RAM register) as the torque
         // ceiling the position controller is allowed to use; ignored otherwise.
-        DynamixelInterface(int n_motors, CommandMode mode, float current_limit_amps = MAX_CURRENT);
+        // max_turns_val is only meaningful for CommandMode::TURNS/CURRENT_POSITION,
+        // where it caps the magnitude of a commanded turn count (see turns_saturation).
+        DynamixelInterface(int n_motors, CommandMode mode, float current_limit_amps = MAX_CURRENT, float max_turns_val = MAX_TURNS);
         ~DynamixelInterface();
 
         // Did every motor come up correctly at construction?

@@ -46,9 +46,11 @@ the position controller's torque via `~current_limit` [A], written once at start
 (a RAM register — no EEPROM/torque-disable dance needed); see the
 [Robotis docs](https://docs.robotis.com/docs/dxl/model_reference/x_series/xm_series/xm430-w210/) for
 the mode's control architecture. Leaving `~current_limit` unset in this mode logs a warning and falls
-back to `MAX_CURRENT` (no effective limiting). This starts the `motor_io` node, which opens
-`/dev/ttyUSB0` at 115200 baud (see `DEVICE_NAME`/`BAUDRATE` in `dynamixel_utils.h`) and talks to
-`N_MOTORS` (7) servos with IDs `1..N_MOTORS`.
+back to `MAX_CURRENT` (no effective limiting). In `turns`/`current_position` modes, `~max_turns`
+[turns] caps the magnitude of a commanded turn count (`turns_saturation`, saturating and warning
+past it); defaults to `MAX_TURNS` (`dynamixel_utils.h`) if unset. This starts the `motor_io` node,
+which opens `/dev/ttyUSB0` at 115200 baud (see `DEVICE_NAME`/`BAUDRATE` in `dynamixel_utils.h`) and
+talks to `N_MOTORS` (7) servos with IDs `1..N_MOTORS`.
 
 ROS interface (namespace `/dynamixels`, defined in `dynamixel_node.h`):
 - Subscribes `cmd_currents` [A] (mode `current`) **or** `cmd_turns` (modes `turns`/`current_position`)
@@ -114,6 +116,9 @@ control-table address/constant — shared by `DynamixelInterface` regardless of 
   these coefficients are re-calibrated, update both the header defines and the README's copy of the
   same formula.
 - `ONE_TURN_REGISTER` = 4096 (XM430-W210 encoder counts per revolution).
+- `MAX_TURNS` = 3.0 is the compile-time default turns-saturation limit; overridable per-run via the
+  `~max_turns` ROS param (see Running), latched into `DynamixelInterface`'s `max_turns` member at
+  construction and passed through to `turns_saturation`.
 
 ### `Ros_Dynamixel_Node` (`dynamixel_node.h/.cpp`)
 
