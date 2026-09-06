@@ -21,20 +21,23 @@ include_directories(
 )
 
 #### Libraries ####
-# Dynamixel Library
-add_library(abstract_dyna src/dynamixel_motors.cpp)
-target_link_libraries(abstract_dyna ${catkin_LIBRARIES})
+# Register-level constants & conversion utilities, shared by every mode
+add_library(dynamixel_utils src/dynamixel_utils.cpp)
+target_link_libraries(dynamixel_utils ${catkin_LIBRARIES})
 
-add_library(ext_pos src/extpos_dynamixel.cpp)
-target_link_libraries(ext_pos ${catkin_LIBRARIES} abstract_dyna)
+# Unified Dynamixel interface: command mode (current/turns) is chosen at
+# construction; feedback (turns + current/torque) is always available.
+add_library(${PROJECT_NAME} src/dynamixel_interface.cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} dynamixel_utils)
 
-add_library(${PROJECT_NAME} src/ros_utils.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ext_pos)
+# ROS node glue
+add_library(dynamixel_node src/dynamixel_node.cpp)
+target_link_libraries(dynamixel_node ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 #### Execs ####
 # Hardware IO Node
 add_executable(motor_io src/motor_io.cpp)
-target_link_libraries(motor_io ${catkin_LIBRARIES} ${PROJECT_NAME})
+target_link_libraries(motor_io ${catkin_LIBRARIES} dynamixel_node)
 
 #### Export Library ####
 install(
@@ -47,4 +50,9 @@ install(
 install(
   DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+install(
+  DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )

@@ -2,7 +2,7 @@
  * Motor Input/Output Node  *
  ****************************/
 // --- Includes --- //
-#include "dynamixel_interface/ros_utils.h"
+#include "dynamixel_interface/dynamixel_node.h"
 
 // --- Main --- //
 int main(int argc, char** argv)
