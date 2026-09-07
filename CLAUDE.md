@@ -48,9 +48,14 @@ the position controller's torque via `~current_limit` [A], written once at start
 the mode's control architecture. Leaving `~current_limit` unset in this mode logs a warning and falls
 back to `MAX_CURRENT` (no effective limiting). In `turns`/`current_position` modes, `~max_turns`
 [turns] caps the magnitude of a commanded turn count (`turns_saturation`, saturating and warning
-past it); defaults to `MAX_TURNS` (`dynamixel_utils.h`) if unset. This starts the `motor_io` node,
-which opens `/dev/ttyUSB0` at 115200 baud (see `DEVICE_NAME`/`BAUDRATE` in `dynamixel_utils.h`) and
-talks to `N_MOTORS` (7) servos with IDs `1..N_MOTORS`.
+past it); defaults to `MAX_TURNS` (`dynamixel_utils.h`) if unset. `~profile_velocity`/
+`~profile_acceleration` set the raw Profile Velocity/Profile Acceleration register values
+(`ADDR_PROFILE_VEL`/`ADDR_PROFILE_ACC`), written once per motor at startup regardless of
+`command_mode` — they shape the trapezoidal motion profile used by the position controller (higher
+= faster/more abrupt moves); default to `PROFILE_VEL_VALUE`/`PROFILE_ACC_VALUE`
+(`dynamixel_utils.h`) if unset. This starts the `motor_io` node, which opens `/dev/ttyUSB0` at
+115200 baud (see `DEVICE_NAME`/`BAUDRATE` in `dynamixel_utils.h`) and talks to `N_MOTORS` (7) servos
+with IDs `1..N_MOTORS`.
 
 ROS interface (namespace `/dynamixels`, defined in `dynamixel_node.h`):
 - Subscribes `cmd_currents` [A] (mode `current`) **or** `cmd_turns` (modes `turns`/`current_position`)
@@ -76,8 +81,12 @@ write path is active is decided once, at construction, by the `CommandMode` (`CU
 register. `CURRENT_POSITION` (`CURRENT_POSITION_MODE` = 5) is commanded exactly like `TURNS` (same
 `set_command` branch — both write goal position), but additionally has a torque ceiling
 (`current_limit_amps` constructor arg) latched once, at construction, into `Goal Current` — the
-position controller then can't exceed it regardless of what turn count is commanded. Read paths
-(`get_turns`, `get_currents`, `get_torques`) are always live regardless of `mode`.
+position controller then can't exceed it regardless of what turn count is commanded. The
+`profile_velocity`/`profile_acceleration` constructor args (raw register values, defaulting to
+`PROFILE_VEL_VALUE`/`PROFILE_ACC_VALUE`) are likewise written once per motor at construction, to
+`ADDR_PROFILE_VEL`/`ADDR_PROFILE_ACC` — independent of `mode` (harmless, unused writes in `CURRENT`
+mode, since that mode doesn't drive the position controller). Read paths (`get_turns`,
+`get_currents`, `get_torques`) are always live regardless of `mode`.
 
 - `set_command(cmd)` — single write entry point; internally dispatches to the current-register write
   (`CURRENT` mode) or the position-register write (`TURNS`/`CURRENT_POSITION`, identical command
