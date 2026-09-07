@@ -25,10 +25,22 @@
   -->
   <arg name="max_turns" default="3.0"/>
 
+  <!--
+    profile_velocity / profile_acceleration: raw Profile Velocity / Profile Acceleration
+    register values (control table addresses 112/108), written once per motor at
+    startup regardless of command_mode - they shape the trapezoidal motion profile
+    used by the position controller (higher = faster/more abrupt moves). Default to
+    PROFILE_VEL_VALUE/PROFILE_ACC_VALUE (dynamixel_utils.h) if unset.
+  -->
+  <arg name="profile_velocity"     default="100"/>
+  <arg name="profile_acceleration" default="10"/>
+
   <node name="motor_io" pkg="dynamixel_interface" type="motor_io" output="screen">
-    <param name="command_mode"  value="$(arg command_mode)"/>
-    <param name="current_limit" value="$(arg current_limit)"/>
-    <param name="max_turns"     value="$(arg max_turns)"/>
+    <param name="command_mode"          value="$(arg command_mode)"/>
+    <param name="current_limit"         value="$(arg current_limit)"/>
+    <param name="max_turns"             value="$(arg max_turns)"/>
+    <param name="profile_velocity"      value="$(arg profile_velocity)"/>
+    <param name="profile_acceleration"  value="$(arg profile_acceleration)"/>
   </node>
 
 </launch>

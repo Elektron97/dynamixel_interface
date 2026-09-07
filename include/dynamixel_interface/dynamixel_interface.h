@@ -86,7 +86,15 @@ class DynamixelInterface
         // ceiling the position controller is allowed to use; ignored otherwise.
         // max_turns_val is only meaningful for CommandMode::TURNS/CURRENT_POSITION,
         // where it caps the magnitude of a commanded turn count (see turns_saturation).
-        DynamixelInterface(int n_motors, CommandMode mode, float current_limit_amps = MAX_CURRENT, float max_turns_val = MAX_TURNS);
+        // profile_velocity/profile_acceleration are raw Profile Velocity/Profile
+        // Acceleration register values (ADDR_PROFILE_VEL/ADDR_PROFILE_ACC), written
+        // once per motor at construction, same as PROFILE_VEL_VALUE/PROFILE_ACC_VALUE
+        // were before; they shape the trapezoidal motion profile used by the
+        // position controller (TURNS/CURRENT_POSITION) and are harmless, unused
+        // writes in CURRENT mode.
+        DynamixelInterface(int n_motors, CommandMode mode, float current_limit_amps = MAX_CURRENT,
+                            float max_turns_val = MAX_TURNS, uint32_t profile_velocity = PROFILE_VEL_VALUE,
+                            uint32_t profile_acceleration = PROFILE_ACC_VALUE);
         ~DynamixelInterface();
 
         // Did every motor come up correctly at construction?

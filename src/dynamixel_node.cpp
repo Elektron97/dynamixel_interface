@@ -74,6 +74,40 @@ namespace
         return (float) max_turns;
     }
 
+    // Reads the "~profile_velocity"/"~profile_acceleration" private params: raw
+    // Profile Velocity/Profile Acceleration register values (ADDR_PROFILE_VEL/
+    // ADDR_PROFILE_ACC), written once per motor at construction regardless of
+    // command mode. Default to PROFILE_VEL_VALUE/PROFILE_ACC_VALUE if unset.
+    uint32_t resolveProfileVelocity()
+    {
+        ros::NodeHandle private_nh("~");
+        int profile_velocity;
+        private_nh.param<int>("profile_velocity", profile_velocity, (int) PROFILE_VEL_VALUE);
+
+        if(profile_velocity < 0)
+        {
+            ROS_WARN("~profile_velocity (%d) must be non-negative; defaulting to %d.", profile_velocity, PROFILE_VEL_VALUE);
+            profile_velocity = PROFILE_VEL_VALUE;
+        }
+
+        return (uint32_t) profile_velocity;
+    }
+
+    uint32_t resolveProfileAcceleration()
+    {
+        ros::NodeHandle private_nh("~");
+        int profile_acceleration;
+        private_nh.param<int>("profile_acceleration", profile_acceleration, (int) PROFILE_ACC_VALUE);
+
+        if(profile_acceleration < 0)
+        {
+            ROS_WARN("~profile_acceleration (%d) must be non-negative; defaulting to %d.", profile_acceleration, PROFILE_ACC_VALUE);
+            profile_acceleration = PROFILE_ACC_VALUE;
+        }
+
+        return (uint32_t) profile_acceleration;
+    }
+
     const char* modeName(CommandMode mode)
     {
         switch(mode)
@@ -89,7 +123,7 @@ namespace
 // --- ROS DYNAMIXEL NODE CLASS --- //
 Ros_Dynamixel_Node::Ros_Dynamixel_Node()
     : mode(resolveCommandMode())
-    , dyna_obj(N_MOTORS, mode, resolveCurrentLimit(mode), resolveMaxTurns())
+    , dyna_obj(N_MOTORS, mode, resolveCurrentLimit(mode), resolveMaxTurns(), resolveProfileVelocity(), resolveProfileAcceleration())
 {
     // Command Subscriber: topic name follows the configured mode (both TURNS
     // and CURRENT_POSITION are commanded by turn count), so the node

@@ -26,7 +26,8 @@ namespace
 }
 
 // --- Constructor --- //
-DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, float current_limit_amps, float max_turns_val)
+DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, float current_limit_amps,
+                                        float max_turns_val, uint32_t profile_velocity, uint32_t profile_acceleration)
 {
     n_motors = n_dyna;
     mode = command_mode;
@@ -59,10 +60,10 @@ DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, flo
         dxl_comm_result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, TORQUE_ENABLE, &dxl_error);
         ok &= checkResult(dxl_comm_result, dxl_error, id, "enable torque");
 
-        dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, id, ADDR_PROFILE_VEL, PROFILE_VEL_VALUE, &dxl_error);
+        dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, id, ADDR_PROFILE_VEL, profile_velocity, &dxl_error);
         ok &= checkResult(dxl_comm_result, dxl_error, id, "set profile velocity");
 
-        dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, id, ADDR_PROFILE_ACC, PROFILE_ACC_VALUE, &dxl_error);
+        dxl_comm_result = packetHandler->write4ByteTxRx(portHandler, id, ADDR_PROFILE_ACC, profile_acceleration, &dxl_error);
         ok &= checkResult(dxl_comm_result, dxl_error, id, "set profile acceleration");
 
         motor_ready[i] = ok;
