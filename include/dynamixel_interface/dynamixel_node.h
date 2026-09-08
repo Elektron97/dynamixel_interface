@@ -15,7 +15,11 @@
 #include "std_srvs/SetBool.h"
 
 // --- Define --- //
-#define NODE_FREQUENCY  30.0    // [Hz] Max publish rate is ~31 Hz
+// Default feedback publish rate, overridable via the "~node_frequency" ROS
+// param. Historically capped near this value by a bug in the feedback path
+// (fixed - see history in dynamixel_interface.cpp); ~node_frequency lets a
+// launch file now go higher if the bus/motor count can keep up.
+#define NODE_FREQUENCY  30.0    // [Hz]
 #define QUEUE_SIZE      10
 #define N_MOTORS        7
 
@@ -57,8 +61,11 @@ class Ros_Dynamixel_Node
     // Service
     ros::ServiceServer torque_srv = node_handle.advertiseService(torque_srv_name, &Ros_Dynamixel_Node::torque_server, this);
 
-    // Timer
-    ros::Timer timer_obj = node_handle.createTimer(ros::Duration(1/NODE_FREQUENCY), &Ros_Dynamixel_Node::main_loop, this);
+    // Timer: constructed in the constructor body (not here as a default
+    // member initializer), since its period now comes from the runtime
+    // "~node_frequency" param rather than the NODE_FREQUENCY compile-time
+    // default.
+    ros::Timer timer_obj;
 
     // Useful Variables
     std_msgs::Float32MultiArray motor_turns;

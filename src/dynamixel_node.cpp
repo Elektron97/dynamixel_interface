@@ -108,6 +108,24 @@ namespace
         return (uint32_t) profile_acceleration;
     }
 
+    // Reads the "~node_frequency" private param [Hz]: the feedback timer's
+    // rate, independent of command_mode (feedback is always published, per
+    // main_loop()). Defaults to NODE_FREQUENCY if unset.
+    double resolveNodeFrequency()
+    {
+        ros::NodeHandle private_nh("~");
+        double node_frequency;
+        private_nh.param<double>("node_frequency", node_frequency, NODE_FREQUENCY);
+
+        if(node_frequency <= 0.0)
+        {
+            ROS_WARN("~node_frequency (%.3f) must be positive; defaulting to %.3f.", node_frequency, NODE_FREQUENCY);
+            node_frequency = NODE_FREQUENCY;
+        }
+
+        return node_frequency;
+    }
+
     const char* modeName(CommandMode mode)
     {
         switch(mode)
@@ -145,8 +163,14 @@ Ros_Dynamixel_Node::Ros_Dynamixel_Node()
     if(!dyna_obj.allMotorsReady())
         ROS_ERROR("Not all Dynamixel motors initialized correctly. Check wiring/IDs/power.");
 
-    ROS_INFO("Dynamixel node started in '%s' command mode, subscribing on '%s'.",
-              modeName(mode), (topic_tag + cmd_topic).c_str());
+    // Timer: rate comes from "~node_frequency", read here rather than at
+    // member-init time since it's a runtime param, not the NODE_FREQUENCY
+    // compile-time default.
+    double node_frequency = resolveNodeFrequency();
+    timer_obj = node_handle.createTimer(ros::Duration(1.0 / node_frequency), &Ros_Dynamixel_Node::main_loop, this);
+
+    ROS_INFO("Dynamixel node started in '%s' command mode, subscribing on '%s', publishing feedback at %.3f Hz.",
+              modeName(mode), (topic_tag + cmd_topic).c_str(), node_frequency);
 }
 
 Ros_Dynamixel_Node::~Ros_Dynamixel_Node()

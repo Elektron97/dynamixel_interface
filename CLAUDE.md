@@ -53,7 +53,9 @@ past it); defaults to `MAX_TURNS` (`dynamixel_utils.h`) if unset. `~profile_velo
 (`ADDR_PROFILE_VEL`/`ADDR_PROFILE_ACC`), written once per motor at startup regardless of
 `command_mode` — they shape the trapezoidal motion profile used by the position controller (higher
 = faster/more abrupt moves); default to `PROFILE_VEL_VALUE`/`PROFILE_ACC_VALUE`
-(`dynamixel_utils.h`) if unset. This starts the `motor_io` node, which opens `/dev/ttyUSB0` at
+(`dynamixel_utils.h`) if unset. `~node_frequency` [Hz] sets the feedback timer's rate
+(`read_turns`/`read_currents`), independent of `command_mode`; defaults to `NODE_FREQUENCY`
+(`dynamixel_node.h`, 30 Hz) if unset. This starts the `motor_io` node, which opens `/dev/ttyUSB0` at
 115200 baud (see `DEVICE_NAME`/`BAUDRATE` in `dynamixel_utils.h`) and talks to `N_MOTORS` (7) servos
 with IDs `1..N_MOTORS`.
 
@@ -63,8 +65,9 @@ ROS interface (namespace `/dynamixels`, defined in `dynamixel_node.h`):
   additionally subscribed — an alternate unit onto the same current command path
   (`DynamixelInterface::set_torques`, via `torque2Current`/`torque2Register`); publishing to both at
   once is undefined (whichever callback lands last wins) so pick one.
-- Publishes `read_turns` and `read_currents` (`std_msgs/Float32MultiArray`) at `NODE_FREQUENCY`
-  (30 Hz) — both, unconditionally, regardless of `command_mode`.
+- Publishes `read_turns` and `read_currents` (`std_msgs/Float32MultiArray`) at `~node_frequency`
+  [Hz] (private ROS param, defaults to `NODE_FREQUENCY` = 30 Hz if unset) — both, unconditionally,
+  regardless of `command_mode`. Independent of the command-side params above.
 - Service `switch_torque` (`std_srvs/SetBool`) — enables/disables torque on all motors; re-enabling
   also re-latches the "zero turns" reference position (`update_initPos`). `res.success` reflects
   whether every motor actually acknowledged the write, not a hardcoded `true`.
@@ -158,7 +161,8 @@ control-table address/constant — shared by `DynamixelInterface` regardless of 
 
 The single ROS node wrapper, replacing the old `current_node`/`ros_utils` split. Reads
 `~command_mode` once at construction (before `DynamixelInterface` is built), subscribes to the
-matching command topic, and always publishes both feedback topics on a 30 Hz timer.
+matching command topic, and always publishes both feedback topics on a timer whose rate is
+`~node_frequency` (default 30 Hz, `NODE_FREQUENCY` in `dynamixel_node.h`).
 
 ### Build graph (`CMakeLists.txt`)
 

@@ -35,12 +35,23 @@
   <arg name="profile_velocity"     default="100"/>
   <arg name="profile_acceleration" default="10"/>
 
+  <!--
+    node_frequency [Hz]: rate of the feedback timer (read_turns/read_currents),
+    independent of command_mode - feedback is always published regardless of
+    which mode the node started in. Defaults to NODE_FREQUENCY (dynamixel_node.h,
+    30 Hz) if unset. That default was historically close to a hard ceiling caused
+    by a bug in the feedback path; now that it's fixed, raise this if your bus/
+    motor count can keep up with a faster read.
+  -->
+  <arg name="node_frequency" default="30.0"/>
+
   <node name="motor_io" pkg="dynamixel_interface" type="motor_io" output="screen">
     <param name="command_mode"          value="$(arg command_mode)"/>
     <param name="current_limit"         value="$(arg current_limit)"/>
     <param name="max_turns"             value="$(arg max_turns)"/>
     <param name="profile_velocity"      value="$(arg profile_velocity)"/>
     <param name="profile_acceleration"  value="$(arg profile_acceleration)"/>
+    <param name="node_frequency"        value="$(arg node_frequency)"/>
   </node>
 
 </launch>
