@@ -20,6 +20,25 @@ Feedback is always both: `read_turns` and `read_currents`, published together at
 
 `switch_torque` (`std_srvs/SetBool`) turns all motors on or off together; turning them back on re-zeroes the turn count from wherever they physically ended up.
 
+## Keyboard teleop
+
+`keyboard_teleop.py` drives the 7 motors from the keyboard — number keys `1`-`7` select a motor, `w`/`+` and `s`/`-` nudge the selected motor's commanded value by a step, `r` zeros the selected motor, `space` zeros all of them, and `q`/Ctrl-C quits (publishing an all-zero command first).
+
+```bash
+roslaunch dynamixel_interface motor_io.launch command_mode:=turns
+roslaunch dynamixel_interface keyboard_teleop.launch
+```
+
+It figures out on its own whether to publish on `cmd_currents` or `cmd_turns` by asking the ROS master which one `motor_io` already subscribed to — so just launch `motor_io` first. If `motor_io` isn't up yet (or isn't reachable), it warns and falls back to `cmd_currents`; pass `command_mode:=turns` (or `current`/`current_position`) to skip auto-detection outright, e.g. if you're starting the teleop before `motor_io`.
+
+Since it needs a real interactive terminal to read keypresses, `keyboard_teleop.launch` runs the node inside an `xterm` (`roslaunch` itself doesn't give a node usable stdin) — or skip the launch file and run it directly:
+
+```bash
+rosrun dynamixel_interface keyboard_teleop.py _command_mode:=turns _turns_step:=0.05 _turns_limit:=3.0
+```
+
+`~current_step`/`~current_limit` and `~turns_step`/`~turns_limit` set the per-keypress increment and a local symmetric clamp on every published value, in the unit matching whichever mode is active — this is on top of, not instead of, the saturation `DynamixelInterface` already applies server-side.
+
 ## Torque and current
 
 The servos are current-controlled, so torque commands go through an empirical quadratic fit rather than a datasheet constant:
