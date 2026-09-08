@@ -69,6 +69,31 @@ ROS interface (namespace `/dynamixels`, defined in `dynamixel_node.h`):
   also re-latches the "zero turns" reference position (`update_initPos`). `res.success` reflects
   whether every motor actually acknowledged the write, not a hardcoded `true`.
 
+### Keyboard teleop (`scripts/keyboard_teleop.py`)
+
+```bash
+roslaunch dynamixel_interface keyboard_teleop.launch                          # auto-detects command_mode
+rosrun dynamixel_interface keyboard_teleop.py _command_mode:=turns            # or set it explicitly
+```
+
+A standalone Python node (no C++ code involved) publishing hand-driven commands onto whichever
+topic `motor_io` is subscribed to. Keys `1`-`7` select one of the `N_MOTORS` (7) motors; `w`/`+` and
+`s`/`-` nudge the selected motor's commanded value by `~current_step`/`~turns_step`; `r` zeros the
+selected motor; `space` zeros all of them; `q`/Ctrl-C quits, publishing an all-zero command first as
+a safety net. Reads raw keypresses via `termios`/`tty` (needs a real interactive stdin — `roslaunch`
+doesn't give a node one, so `keyboard_teleop.launch` runs it inside `xterm` via `launch-prefix`;
+`rosrun` from a normal terminal works directly).
+
+`~command_mode` is optional: if unset, `detect_command_mode()` queries the ROS master's system state
+(`rosgraph.Master.getSystemState()`) for which of `/dynamixels/cmd_currents` /
+`/dynamixels/cmd_turns` already has a subscriber (i.e. whichever `motor_io` picked at its own
+startup) and mirrors that choice — `turns` and `current_position` are indistinguishable this way
+(both subscribe to `cmd_turns`) but are commanded identically, so that's harmless. If neither topic
+has a subscriber yet (`motor_io` not up, or master unreachable), it warns and falls back to
+`current`. Passing `~command_mode` explicitly skips detection outright. `~current_limit`/
+`~turns_limit` apply a local symmetric clamp on every published value, independent of (and in
+addition to) the saturation `DynamixelInterface` applies server-side.
+
 ## Architecture
 
 ### `DynamixelInterface` (`dynamixel_interface.h/.cpp`)
