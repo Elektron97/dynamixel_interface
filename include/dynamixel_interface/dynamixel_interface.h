@@ -41,6 +41,11 @@ class DynamixelInterface
         uint8_t dxl_error = 0;
         int dxl_comm_result = COMM_TX_FAIL;
 
+        // Did the serial port actually open (and get its baudrate set) at
+        // construction? Every per-motor init write is skipped when this is
+        // false, since they'd all fail with COMM_TX_FAIL anyway.
+        bool port_ready = false;
+
         // Sync Write objects: both position and current are always instantiated,
         // since only the write path matching `mode` is ever used but either
         // could be needed (e.g. by the destructor's shutdown sequence).
@@ -99,6 +104,11 @@ class DynamixelInterface
 
         // Did every motor come up correctly at construction?
         bool allMotorsReady() const;
+        // Did the serial port itself open successfully at construction? False
+        // here means allMotorsReady() is false for a reason upstream of any
+        // individual motor (bad device path/permissions/cable), not a
+        // per-servo comm failure.
+        bool isPortReady() const { return port_ready; }
         CommandMode getMode() const { return mode; }
 
         // --- Command (dispatches to current or turns internally, per `mode`) --- //
