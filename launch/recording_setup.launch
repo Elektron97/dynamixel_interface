@@ -1,0 +1,43 @@
+<launch>
+
+  <!--
+    Shared recording setup: vicon_bridge + a realsense color stream + a bag
+    recording vicon, motor and camera topics. Included by experiment launch
+    files that need vicon/camera/bag capture alongside motor_io.
+  -->
+
+  <!--
+    D435 color sensor tops out at 1920x1080 only at 30fps; 60fps requires
+    dropping to 1280x720 (its highest resolution that supports 60fps).
+  -->
+  <arg name="color_width"  default="1280"/>
+  <arg name="color_height" default="720"/>
+  <arg name="color_fps"    default="60"/>
+
+  <!-- rosbag output prefix; rosbag appends the record timestamp itself. -->
+  <arg name="bag_prefix" default="$(env HOME)/bagfiles/proboscis_identification/proboscis_friction/proboscis_friction"/>
+
+  <!-- (i) vicon_bridge -->
+  <include file="$(find vicon_bridge)/launch/vicon.launch"/>
+
+  <!--
+    (ii) realsense color stream, max resolution at 60fps. Laser (emitter) off:
+    depth/infra disabled means the stereo module never streams, so the
+    projector never fires - no separate emitter_enable toggle needed.
+  -->
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="enable_depth"      value="false"/>
+    <arg name="enable_infra"      value="false"/>
+    <arg name="color_width"       value="$(arg color_width)"/>
+    <arg name="color_height"      value="$(arg color_height)"/>
+    <arg name="color_fps"         value="$(arg color_fps)"/>
+  </include>
+
+  <!-- (iii) bag recorder: all vicon + motor topics, camera color compressed only -->
+  <node name="bag_record" pkg="rosbag" type="record"
+        args="-o $(arg bag_prefix)
+              -e '(/vicon/.*)|(/dynamixels/.*)'
+              /camera/color/image_raw/compressed"
+        output="screen"/>
+
+</launch>

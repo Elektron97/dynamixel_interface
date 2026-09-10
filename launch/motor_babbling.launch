@@ -1,0 +1,53 @@
+<launch>
+
+  <!--
+    Motor babbling: recording_setup.launch (vicon_bridge + realsense color
+    stream + bag recording vicon, motor and camera topics) + motor_io (turns
+    mode) + motor_babbling.py publishing a fresh random turns vector every
+    hold_s seconds for duration_s seconds.
+  -->
+
+  <!-- motor_io -->
+  <arg name="max_turns"            default="1.0"/>
+  <arg name="current_limit"        default="1.5"/>
+  <arg name="profile_velocity"     default="0"/>
+  <arg name="profile_acceleration" default="0"/>
+  <arg name="node_frequency"       default="30.0"/>
+
+  <!-- motor_babbling.py -->
+  <arg name="low"         default="-1.0"/>
+  <arg name="high"        default="0.0"/>
+  <arg name="hold_s"      default="2.0"/>
+  <arg name="duration_s"  default="30.0"/>
+
+  <!-- recording_setup.launch -->
+  <arg name="color_width"  default="1280"/>
+  <arg name="color_height" default="720"/>
+  <arg name="color_fps"    default="60"/>
+  <arg name="bag_prefix"   default="$(env HOME)/bagfiles/proboscis_identification/proboscis_friction/motor_babbling"/>
+
+  <!-- (i) vicon_bridge, (ii) realsense color stream, (iii) bag recorder -->
+  <include file="$(find dynamixel_interface)/launch/recording_setup.launch">
+    <arg name="color_width"  value="$(arg color_width)"/>
+    <arg name="color_height" value="$(arg color_height)"/>
+    <arg name="color_fps"    value="$(arg color_fps)"/>
+    <arg name="bag_prefix"   value="$(arg bag_prefix)"/>
+  </include>
+
+  <include file="$(find dynamixel_interface)/launch/motor_io.launch">
+    <arg name="command_mode"          value="turns"/>
+    <arg name="max_turns"             value="$(arg max_turns)"/>
+    <arg name="current_limit"         value="$(arg current_limit)"/>
+    <arg name="profile_velocity"      value="$(arg profile_velocity)"/>
+    <arg name="profile_acceleration"  value="$(arg profile_acceleration)"/>
+    <arg name="node_frequency"        value="$(arg node_frequency)"/>
+  </include>
+
+  <node name="motor_babbling" pkg="dynamixel_interface" type="motor_babbling.py" output="screen">
+    <param name="low"         value="$(arg low)"/>
+    <param name="high"        value="$(arg high)"/>
+    <param name="hold_s"      value="$(arg hold_s)"/>
+    <param name="duration_s"  value="$(arg duration_s)"/>
+  </node>
+
+</launch>

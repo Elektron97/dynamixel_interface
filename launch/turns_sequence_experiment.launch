@@ -1,0 +1,63 @@
+<launch>
+
+  <!--
+    Full turns-sequence experiment: recording_setup.launch (vicon_bridge +
+    realsense color stream + bag recording vicon, motor and camera topics) +
+    motor_io (turns mode, max_turns=1) + the per-motor turns_sequence_test.py
+    sequencer.
+  -->
+
+  <!-- motor_io -->
+  <arg name="current_limit"        default="1.5"/>
+  <!-- <arg name="profile_velocity"     default="100"/>
+  <arg name="profile_acceleration" default="10"/> -->
+  <arg name="profile_velocity"     default="0"/>
+  <arg name="profile_acceleration" default="0"/>
+  <arg name="node_frequency"       default="30.0"/>
+
+  <!-- turns_sequence_test.py -->
+  <arg name="idle_s"  default="10.0"/>
+  <arg name="hold_s"  default="20.0"/>
+  <arg name="ramp_s"  default="30.0"/>
+  <arg name="ramp_hz" default="20"/>
+  <arg name="turns"   default="-1.0"/>
+
+  <!--
+    D435 color sensor tops out at 1920x1080 only at 30fps; 60fps requires
+    dropping to 1280x720 (its highest resolution that supports 60fps).
+  -->
+  <arg name="color_width"  default="1280"/>
+  <arg name="color_height" default="720"/>
+  <arg name="color_fps"    default="60"/>
+
+  <!-- rosbag output prefix; rosbag appends the record timestamp itself. -->
+  <arg name="bag_prefix" default="$(env HOME)/bagfiles/proboscis_identification/proboscis_friction/proboscis_friction"/>
+
+  <!-- (i) vicon_bridge, (ii) realsense color stream, (iii) bag recorder -->
+  <include file="$(find dynamixel_interface)/launch/recording_setup.launch">
+    <arg name="color_width"  value="$(arg color_width)"/>
+    <arg name="color_height" value="$(arg color_height)"/>
+    <arg name="color_fps"    value="$(arg color_fps)"/>
+    <arg name="bag_prefix"   value="$(arg bag_prefix)"/>
+  </include>
+
+  <!-- (iv) motor_io, turns mode, max_turns=1 -->
+  <include file="$(find dynamixel_interface)/launch/motor_io.launch">
+    <arg name="command_mode"          value="turns"/>
+    <arg name="max_turns"             value="1.0"/>
+    <arg name="current_limit"         value="$(arg current_limit)"/>
+    <arg name="profile_velocity"      value="$(arg profile_velocity)"/>
+    <arg name="profile_acceleration"  value="$(arg profile_acceleration)"/>
+    <arg name="node_frequency"        value="$(arg node_frequency)"/>
+  </include>
+
+  <!-- (v) turns_sequence_test.py -->
+  <node name="turns_sequence_test" pkg="dynamixel_interface" type="turns_sequence_test.py" output="screen">
+    <param name="idle_s"  value="$(arg idle_s)"/>
+    <param name="hold_s"  value="$(arg hold_s)"/>
+    <param name="ramp_s"  value="$(arg ramp_s)"/>
+    <param name="ramp_hz" value="$(arg ramp_hz)"/>
+    <param name="turns"   value="$(arg turns)"/>
+  </node>
+
+</launch>
