@@ -24,7 +24,7 @@
   <arg name="color_width"  default="1280"/>
   <arg name="color_height" default="720"/>
   <arg name="color_fps"    default="60"/>
-  <arg name="bag_prefix"   default="$(env HOME)/bagfiles/proboscis_identification/proboscis_friction/motor_babbling"/>
+  <arg name="bag_prefix"   default="$(env HOME)/bagfiles/proboscis_identification/proboscis_frictionless/motor_babbling"/>
 
   <!-- (i) vicon_bridge, (ii) realsense color stream, (iii) bag recorder -->
   <include file="$(find dynamixel_interface)/launch/recording_setup.launch">

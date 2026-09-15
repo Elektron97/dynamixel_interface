@@ -56,7 +56,9 @@ class Ros_Dynamixel_Node
     ros::Subscriber cmd_sub;
     ros::Subscriber cmd_torques_sub;
     ros::Publisher currents_pub = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + read_currents_name, QUEUE_SIZE);
-    ros::Publisher turns_pub    = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + read_turns_name, QUEUE_SIZE);
+    // turns_pub disabled for now - read_turns feedback was found far noisier
+    // than read_currents in recent experiments (see publish_feedback()).
+    // ros::Publisher turns_pub    = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + read_turns_name, QUEUE_SIZE);
 
     // Service
     ros::ServiceServer torque_srv = node_handle.advertiseService(torque_srv_name, &Ros_Dynamixel_Node::torque_server, this);
@@ -84,7 +86,9 @@ class Ros_Dynamixel_Node
         ~Ros_Dynamixel_Node();
 
         // Publisher: reads turns+currents together (one bus transaction via
-        // DynamixelInterface::get_feedback) and publishes both.
+        // DynamixelInterface::get_feedback, since currents share the same
+        // sync read as turns) but only publishes currents for now -
+        // turns_pub is commented out, not removed (see dynamixel_node.cpp).
         void publish_feedback();
 
         // Main Loop

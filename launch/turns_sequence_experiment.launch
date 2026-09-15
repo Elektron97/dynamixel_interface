@@ -31,7 +31,7 @@
   <arg name="color_fps"    default="60"/>
 
   <!-- rosbag output prefix; rosbag appends the record timestamp itself. -->
-  <arg name="bag_prefix" default="$(env HOME)/bagfiles/proboscis_identification/proboscis_friction/proboscis_friction"/>
+  <arg name="bag_prefix" default="$(env HOME)/bagfiles/proboscis_identification/proboscis_frictionless/proboscis_frictionless"/>
 
   <!-- (i) vicon_bridge, (ii) realsense color stream, (iii) bag recorder -->
   <include file="$(find dynamixel_interface)/launch/recording_setup.launch">

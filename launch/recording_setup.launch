@@ -33,10 +33,14 @@
     <arg name="color_fps"         value="$(arg color_fps)"/>
   </include>
 
-  <!-- (iii) bag recorder: all vicon + motor topics, camera color compressed only -->
+  <!--
+    (iii) bag recorder: all vicon + motor topics, camera color compressed
+    only. read_turns feedback is excluded (noisy vs. read_currents in recent
+    experiments) - cmd_turns (the command) and read_currents are still kept.
+  -->
   <node name="bag_record" pkg="rosbag" type="record"
         args="-o $(arg bag_prefix)
-              -e '(/vicon/.*)|(/dynamixels/.*)'
+              -e '(/vicon/.*)|(/dynamixels/(?!read_turns).*)'
               /camera/color/image_raw/compressed"
         output="screen"/>
 

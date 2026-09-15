@@ -231,7 +231,9 @@ void Ros_Dynamixel_Node::publish_feedback()
         return;
     }
 
-    turns_pub.publish(motor_turns);
+    // read_turns publishing disabled for now - noisier than read_currents in
+    // recent experiments. Kept commented rather than removed.
+    // turns_pub.publish(motor_turns);
     currents_pub.publish(motor_currents);
 }
 
