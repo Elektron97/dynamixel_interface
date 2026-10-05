@@ -3,7 +3,7 @@
   <!--
     Full turns-sequence experiment: recording_setup.launch (vicon_bridge +
     realsense color stream + bag recording vicon, motor and camera topics) +
-    motor_io (turns mode, max_turns=1) + the per-motor turns_sequence_test.py
+    motor_io (turns mode, max_turns=2) + the per-motor turns_sequence_test.py
     sequencer.
   -->
 
@@ -20,7 +20,8 @@
   <arg name="hold_s"  default="20.0"/>
   <arg name="ramp_s"  default="30.0"/>
   <arg name="ramp_hz" default="20"/>
-  <arg name="turns"   default="-1.0"/>
+  <arg name="prox_turns" default="-1.0"/>
+  <arg name="dist_turns" default="-2.0"/>
 
   <!--
     D435 color sensor tops out at 1920x1080 only at 30fps; 60fps requires
@@ -41,10 +42,10 @@
     <arg name="bag_prefix"   value="$(arg bag_prefix)"/>
   </include>
 
-  <!-- (iv) motor_io, turns mode, max_turns=1 -->
+  <!-- (iv) motor_io, turns mode, max_turns=2 -->
   <include file="$(find dynamixel_interface)/launch/motor_io.launch">
     <arg name="command_mode"          value="turns"/>
-    <arg name="max_turns"             value="1.0"/>
+    <arg name="max_turns"             value="2.0"/>
     <arg name="current_limit"         value="$(arg current_limit)"/>
     <arg name="profile_velocity"      value="$(arg profile_velocity)"/>
     <arg name="profile_acceleration"  value="$(arg profile_acceleration)"/>
@@ -57,7 +58,8 @@
     <param name="hold_s"  value="$(arg hold_s)"/>
     <param name="ramp_s"  value="$(arg ramp_s)"/>
     <param name="ramp_hz" value="$(arg ramp_hz)"/>
-    <param name="turns"   value="$(arg turns)"/>
+    <param name="prox_turns" value="$(arg prox_turns)"/>
+    <param name="dist_turns" value="$(arg dist_turns)"/>
   </node>
 
 </launch>

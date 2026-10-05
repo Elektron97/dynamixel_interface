@@ -8,14 +8,15 @@
   -->
 
   <!-- motor_io -->
-  <arg name="max_turns"            default="1.0"/>
+  <arg name="max_turns"            default="2.0"/>
   <arg name="current_limit"        default="1.5"/>
   <arg name="profile_velocity"     default="0"/>
   <arg name="profile_acceleration" default="0"/>
   <arg name="node_frequency"       default="30.0"/>
 
   <!-- motor_babbling.py -->
-  <arg name="low"         default="-1.0"/>
+  <arg name="prox_low"    default="-1.0"/>
+  <arg name="dist_low"    default="-2.0"/>
   <arg name="high"        default="0.0"/>
   <arg name="hold_s"      default="2.0"/>
   <arg name="duration_s"  default="30.0"/>
@@ -44,7 +45,8 @@
   </include>
 
   <node name="motor_babbling" pkg="dynamixel_interface" type="motor_babbling.py" output="screen">
-    <param name="low"         value="$(arg low)"/>
+    <param name="prox_low"    value="$(arg prox_low)"/>
+    <param name="dist_low"    value="$(arg dist_low)"/>
     <param name="high"        value="$(arg high)"/>
     <param name="hold_s"      value="$(arg hold_s)"/>
     <param name="duration_s"  value="$(arg duration_s)"/>

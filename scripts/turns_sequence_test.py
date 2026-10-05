@@ -12,7 +12,9 @@ IDLE_S = 10.0
 HOLD_S = 10.0
 RAMP_S = 10.0
 RAMP_HZ = 20
-TURNS = -1.0
+PROX = (1, 4, 5)  # motor indices (ID-1) of channels 2,5,6: base -> cs1
+PROX_TURNS = -1.0
+DIST_TURNS = -2.0
 
 
 def main():
@@ -21,7 +23,8 @@ def main():
     hold_s = rospy.get_param("~hold_s", HOLD_S)
     ramp_s = rospy.get_param("~ramp_s", RAMP_S)
     ramp_hz = rospy.get_param("~ramp_hz", RAMP_HZ)
-    turns = rospy.get_param("~turns", TURNS)
+    prox_turns = rospy.get_param("~prox_turns", PROX_TURNS)
+    dist_turns = rospy.get_param("~dist_turns", DIST_TURNS)
     pub = rospy.Publisher("/dynamixels/cmd_turns", Float32MultiArray, queue_size=10)
     rospy.sleep(0.5)  # let publisher connect
 
@@ -38,6 +41,7 @@ def main():
     for motor in range(N_MOTORS):
         if rospy.is_shutdown():
             break
+        turns = prox_turns if motor in PROX else dist_turns
         rospy.loginfo("motor %d: 0 -> %.3f turns, hold %.0fs", motor + 1, turns, hold_s)
         values[motor] = turns
         publish(values)
