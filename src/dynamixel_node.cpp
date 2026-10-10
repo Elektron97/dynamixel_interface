@@ -156,6 +156,10 @@ Ros_Dynamixel_Node::Ros_Dynamixel_Node()
     if(mode == CommandMode::CURRENT)
         cmd_torques_sub = node_handle.subscribe(topic_tag + cmd_torques_name, QUEUE_SIZE, &Ros_Dynamixel_Node::cmd_torques_callBack, this);
 
+    // read_turns feedback: opt-in, see the comment on turns_pub.
+    if(ros::NodeHandle("~").param<bool>("publish_turns", false))
+        turns_pub = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + read_turns_name, QUEUE_SIZE);
+
     // Init FloatMultiArray
     motor_turns.data    = vector<float>(N_MOTORS);
     motor_currents.data = vector<float>(N_MOTORS);
@@ -231,9 +235,10 @@ void Ros_Dynamixel_Node::publish_feedback()
         return;
     }
 
-    // read_turns publishing disabled for now - noisier than read_currents in
-    // recent experiments. Kept commented rather than removed.
-    // turns_pub.publish(motor_turns);
+    // read_turns is published only with ~publish_turns:=true (default off:
+    // noisier than read_currents in recent experiments).
+    if(turns_pub)
+        turns_pub.publish(motor_turns);
     currents_pub.publish(motor_currents);
 }
 

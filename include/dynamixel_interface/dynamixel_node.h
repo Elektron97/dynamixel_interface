@@ -56,9 +56,11 @@ class Ros_Dynamixel_Node
     ros::Subscriber cmd_sub;
     ros::Subscriber cmd_torques_sub;
     ros::Publisher currents_pub = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + read_currents_name, QUEUE_SIZE);
-    // turns_pub disabled for now - read_turns feedback was found far noisier
-    // than read_currents in recent experiments (see publish_feedback()).
-    // ros::Publisher turns_pub    = node_handle.advertise<std_msgs::Float32MultiArray>(topic_tag + read_turns_name, QUEUE_SIZE);
+    // turns_pub is advertised only if the "~publish_turns" param is true
+    // (default false): read_turns feedback was found far noisier than
+    // read_currents in recent experiments (see publish_feedback()), but
+    // some nodes (e.g. eleanor_babble) need it.
+    ros::Publisher turns_pub;
 
     // Service
     ros::ServiceServer torque_srv = node_handle.advertiseService(torque_srv_name, &Ros_Dynamixel_Node::torque_server, this);

@@ -45,6 +45,12 @@
   -->
   <arg name="node_frequency" default="30.0"/>
 
+  <!--
+    publish_turns: also publish /dynamixels/read_turns (off by default, it is
+    noisier than read_currents). Needed by eleanor_babble.
+  -->
+  <arg name="publish_turns" default="false"/>
+
   <node name="motor_io" pkg="dynamixel_interface" type="motor_io" output="screen">
     <param name="command_mode"          value="$(arg command_mode)"/>
     <param name="current_limit"         value="$(arg current_limit)"/>
@@ -52,6 +58,7 @@
     <param name="profile_velocity"      value="$(arg profile_velocity)"/>
     <param name="profile_acceleration"  value="$(arg profile_acceleration)"/>
     <param name="node_frequency"        value="$(arg node_frequency)"/>
+    <param name="publish_turns"         value="$(arg publish_turns)"/>
   </node>
 
 </launch>
