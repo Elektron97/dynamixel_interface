@@ -25,12 +25,10 @@
     depth/infra disabled means the stereo module never streams, so the
     projector never fires - no separate emitter_enable toggle needed.
   -->
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <arg name="enable_depth"      value="false"/>
-    <arg name="enable_infra"      value="false"/>
-    <arg name="color_width"       value="$(arg color_width)"/>
-    <arg name="color_height"      value="$(arg color_height)"/>
-    <arg name="color_fps"         value="$(arg color_fps)"/>
+  <include file="$(find dynamixel_interface)/launch/realsense_pair.launch">
+    <arg name="color_width"  value="$(arg color_width)"/>
+    <arg name="color_height" value="$(arg color_height)"/>
+    <arg name="color_fps"    value="$(arg color_fps)"/>
   </include>
 
   <!--
@@ -41,7 +39,8 @@
   <node name="bag_record" pkg="rosbag" type="record"
         args="-o $(arg bag_prefix)
               -e '(/vicon/.*)|(/dynamixels/(?!read_turns).*)'
-              /camera/color/image_raw/compressed"
+              /camera1/color/image_raw/compressed
+              /camera2/color/image_raw/compressed"
         output="screen"/>
 
 </launch>

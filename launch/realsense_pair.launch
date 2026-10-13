@@ -1,0 +1,33 @@
+<launch>
+  <!--
+    Two D435i, colour only (depth/infra off: the projector never fires). Namespaces
+    camera1 / camera2, so the recorded topics are /camera{1,2}/color/image_raw/compressed.
+    Both cameras sit on USB 2.0 (480M): 720p60 does not fit, 15 fps is what arrives.
+    Serials are fixed per physical camera; which one is on which side is unlabelled,
+    so check the first image and swap the two serials if needed.
+  -->
+  <arg name="serial1"      default="048122072089"/>
+  <arg name="serial2"      default="215322079799"/>
+  <arg name="color_width"  default="1280"/>
+  <arg name="color_height" default="720"/>
+  <arg name="color_fps"    default="15"/>
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera"       value="camera1"/>
+    <arg name="serial_no"    value="$(arg serial1)"/>
+    <arg name="enable_depth" value="false"/>
+    <arg name="enable_infra" value="false"/>
+    <arg name="color_width"  value="$(arg color_width)"/>
+    <arg name="color_height" value="$(arg color_height)"/>
+    <arg name="color_fps"    value="$(arg color_fps)"/>
+  </include>
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera"       value="camera2"/>
+    <arg name="serial_no"    value="$(arg serial2)"/>
+    <arg name="enable_depth" value="false"/>
+    <arg name="enable_infra" value="false"/>
+    <arg name="color_width"  value="$(arg color_width)"/>
+    <arg name="color_height" value="$(arg color_height)"/>
+    <arg name="color_fps"    value="$(arg color_fps)"/>
+  </include>
+</launch>
