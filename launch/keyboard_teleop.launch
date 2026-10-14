@@ -1,0 +1,29 @@
+<launch>
+
+  <!--
+    command_mode: leave unset (default) to auto-detect at startup from which
+    command topic motor_io has already subscribed to - only works if motor_io
+    is already running. Set explicitly ("current" | "turns" |
+    "current_position") to skip auto-detection, e.g. when launching this
+    before motor_io is up.
+  -->
+  <arg name="command_mode"  default=""/>
+
+  <!-- Amount added/subtracted from the selected motor per keypress, and the
+       symmetric clamp applied to every published value (independent of, but
+       normally kept at or below, motor_io's own current_limit/max_turns). -->
+  <arg name="current_step"  default="0.05"/>
+  <arg name="current_limit" default="1.0"/>
+  <arg name="turns_step"    default="0.05"/>
+  <arg name="turns_limit"   default="3.0"/>
+
+  <node name="keyboard_teleop" pkg="dynamixel_interface" type="keyboard_teleop.py"
+        output="screen" launch-prefix="xterm -e">
+    <param if="$(eval command_mode != '')" name="command_mode" value="$(arg command_mode)"/>
+    <param name="current_step"  value="$(arg current_step)"/>
+    <param name="current_limit" value="$(arg current_limit)"/>
+    <param name="turns_step"    value="$(arg turns_step)"/>
+    <param name="turns_limit"   value="$(arg turns_limit)"/>
+  </node>
+
+</launch>

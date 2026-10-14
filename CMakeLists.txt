@@ -56,3 +56,8 @@ install(
   DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
+
+catkin_install_python(
+  PROGRAMS scripts/keyboard_teleop.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

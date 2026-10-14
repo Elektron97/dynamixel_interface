@@ -34,6 +34,21 @@ DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, flo
     max_turns = max_turns_val;
     motor_ready.assign(n_motors, false);
 
+    // The port has to actually be opened (and its baudrate configured) before
+    // any TxRx call below can succeed - getPortHandler() above only builds the
+    // handler object, it doesn't touch the serial device.
+    port_ready = portHandler->openPort();
+    if(!port_ready)
+    {
+        ROS_ERROR("Failed to open port %s - check the device is connected and readable "
+                   "(e.g. /dev/ttyUSB0 permissions/dialout group).", DEVICE_NAME);
+    }
+    else if(!portHandler->setBaudRate(BAUDRATE))
+    {
+        port_ready = false;
+        ROS_ERROR("Failed to set baudrate %d on port %s.", BAUDRATE, DEVICE_NAME);
+    }
+
     uint8_t op_mode;
     switch(mode)
     {
@@ -46,7 +61,10 @@ DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, flo
     // Turn On LED | Op Mode | Enable Torque | Profile Velocity | Profile Acceleration
     // Every motor gets a full attempt regardless of an earlier motor's failure,
     // so one unresponsive servo does not leave the rest of the arm unconfigured.
-    for(int i = 0; i < n_motors; i++)
+    // Skipped entirely if the port itself never opened - motor_ready stays all
+    // false in that case, which allMotorsReady() already surfaces below, and
+    // there's no point spamming a comm-fail error per motor per register.
+    for(int i = 0; port_ready && i < n_motors; i++)
     {
         uint8_t id = i + 1;
         bool ok = true;
@@ -79,11 +97,21 @@ DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, flo
     position_write_buffer.assign(n_motors * POSITION_BYTE, 0);
     current_write_buffer.assign(n_motors * CURRENT_BYTE, 0);
 
+    if(mode == CommandMode::CURRENT)
+    {
+        // Goal Current is a RAM register - it survives a node restart while the
+        // servos stay powered, so torque was just enabled above with whatever
+        // stale value happened to be latched from before. Zero it immediately so
+        // the motors can't apply a leftover current before any cmd_currents/
+        // cmd_torques message ever arrives.
+        if(!writeCurrents(std::vector<int16_t>(n_motors, 0)))
+            ROS_ERROR("Failed to zero goal current on startup.");
+    }
     // Current-based Position mode: latch the torque ceiling once, as Goal
     // Current (a RAM register - no torque-disable/EEPROM dance needed). The
     // position controller uses this as a hard cap on how hard it can push to
     // reach a commanded turn count, e.g. to avoid overtensioning a tendon.
-    if(mode == CommandMode::CURRENT_POSITION)
+    else if(mode == CommandMode::CURRENT_POSITION)
     {
         int16_t limit_reg = current2Register(current_limit_amps);
         if(!registerCur_saturation(limit_reg))
