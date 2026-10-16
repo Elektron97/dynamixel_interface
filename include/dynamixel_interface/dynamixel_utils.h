@@ -28,6 +28,7 @@ using namespace dynamixel;
 #define ADDR_GOAL_CURRENT       102
 // Present
 #define ADDR_PRESENT_POSITION   132
+#define ADDR_HW_ERROR_STATUS    70      // Hardware Error Status (overload, overheating, ...), 1 byte
 #define ADDR_PRESENT_CURRENT    126
 // Present-current, -velocity and -position are laid out contiguously in the
 // control table (126-135), so a single sync read spanning all of them costs

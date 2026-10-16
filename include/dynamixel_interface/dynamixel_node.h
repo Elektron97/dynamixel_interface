@@ -10,6 +10,7 @@
 
 // msgs
 #include "std_msgs/Float32MultiArray.h"
+#include "std_msgs/UInt8MultiArray.h"
 
 // srv
 #include "std_srvs/SetBool.h"
@@ -34,6 +35,7 @@ const string cmd_turns_name     = "/cmd_turns";
 const string read_currents_name = "/read_currents";
 const string read_turns_name    = "/read_turns";
 const string torque_srv_name    = "/switch_torque";
+const string hw_error_name      = "/hw_error";
 
 class Ros_Dynamixel_Node
 {
@@ -61,6 +63,10 @@ class Ros_Dynamixel_Node
     // read_currents in recent experiments (see publish_feedback()), but
     // some nodes (e.g. eleanor_babble) need it.
     ros::Publisher turns_pub;
+    // Hardware Error Status per motor (0 = fine), every feedback tick: an Overload drops torque
+    // silently, so motion scripts watch this and abort.
+    ros::Publisher hw_error_pub = node_handle.advertise<std_msgs::UInt8MultiArray>(topic_tag + hw_error_name, QUEUE_SIZE);
+    std_msgs::UInt8MultiArray hw_errors;
 
     // Service
     ros::ServiceServer torque_srv = node_handle.advertiseService(torque_srv_name, &Ros_Dynamixel_Node::torque_server, this);

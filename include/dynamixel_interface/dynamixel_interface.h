@@ -126,6 +126,10 @@ class DynamixelInterface
         bool get_currents(std::vector<float>& currents);
         bool get_torques(std::vector<float>& torques);
         bool get_feedback(std::vector<float>& turns, std::vector<float>& currents);
+        // Error byte of each motor's status packet in the last feedback read: bit 7 (0x80) is the
+        // hardware error alert (an Overload drops torque). read_hw_error() reads the cause (address 70).
+        std::vector<uint8_t> status_errors;
+        uint8_t read_hw_error(int id);
 
         // --- Torque control --- //
         bool enableTorque();     // also re-latches the zero-turn reference

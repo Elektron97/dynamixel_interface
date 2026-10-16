@@ -94,6 +94,7 @@ DynamixelInterface::DynamixelInterface(int n_dyna, CommandMode command_mode, flo
     // heap-allocates per call.
     position_registers_buf.reserve(n_motors);
     current_registers_buf.reserve(n_motors);
+    status_errors.assign(n_motors, 0);
     position_write_buffer.assign(n_motors * POSITION_BYTE, 0);
     current_write_buffer.assign(n_motors * CURRENT_BYTE, 0);
 
@@ -149,6 +150,14 @@ DynamixelInterface::~DynamixelInterface()
         ROS_ERROR("Failed to disable torque/LED on all motors during shutdown.");
 
     ROS_WARN("Dynamixel interface terminated.");
+}
+
+uint8_t DynamixelInterface::read_hw_error(int id)
+{
+    uint8_t value = 0, err = 0;
+    if(packetHandler->read1ByteTxRx(portHandler, (uint8_t) id, ADDR_HW_ERROR_STATUS, &value, &err) != COMM_SUCCESS)
+        return 0xFF;    // alert seen but the cause is unreadable
+    return value;
 }
 
 bool DynamixelInterface::allMotorsReady() const
@@ -253,6 +262,7 @@ bool DynamixelInterface::readFeedbackRegisters()
     {
         position_registers_buf.push_back(feedback_syncRead.getData((uint8_t) id, ADDR_PRESENT_POSITION, POSITION_BYTE));
         current_registers_buf.push_back((int16_t) feedback_syncRead.getData((uint8_t) id, ADDR_PRESENT_CURRENT, CURRENT_BYTE));
+        feedback_syncRead.getError((uint8_t) id, &status_errors[id - 1]);
     }
 
     feedback_syncRead.clearParam();

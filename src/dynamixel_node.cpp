@@ -240,6 +240,15 @@ void Ros_Dynamixel_Node::publish_feedback()
     if(turns_pub)
         turns_pub.publish(motor_turns);
     currents_pub.publish(motor_currents);
+
+    hw_errors.data.assign(N_MOTORS, 0);
+    for(int i = 0; i < N_MOTORS; i++)
+        if(dyna_obj.status_errors[i] & 0x80)
+        {
+            hw_errors.data[i] = dyna_obj.read_hw_error(i + 1);
+            ROS_ERROR_THROTTLE(1.0, "Dynamixel ID %d hardware error, status %d (power-cycle to clear)", i + 1, hw_errors.data[i]);
+        }
+    hw_error_pub.publish(hw_errors);
 }
 
 void Ros_Dynamixel_Node::main_loop(const ros::TimerEvent& event)
