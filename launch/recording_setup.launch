@@ -17,6 +17,9 @@
   <!-- rosbag output prefix; rosbag appends the record timestamp itself. -->
   <arg name="bag_prefix" default="$(env HOME)/bagfiles/proboscis_identification/proboscis_friction/proboscis_friction"/>
 
+  <!-- true: also record /dynamixels/read_turns (needs motor_io publish_turns). -->
+  <arg name="record_read_turns" default="false"/>
+
   <!-- (i) vicon_bridge -->
   <include file="$(find vicon_bridge)/launch/vicon.launch"/>
 
@@ -36,9 +39,17 @@
     only. read_turns feedback is excluded (noisy vs. read_currents in recent
     experiments) - cmd_turns (the command) and read_currents are still kept.
   -->
-  <node name="bag_record" pkg="rosbag" type="record"
+  <node name="bag_record" unless="$(arg record_read_turns)" pkg="rosbag" type="record"
         args="-o $(arg bag_prefix)
               -e '(/vicon/.*)|(/dynamixels/(?!read_turns).*)'
+              /camera1/color/image_raw/compressed
+              /camera2/color/image_raw/compressed"
+        output="screen"/>
+
+
+  <node name="bag_record" if="$(arg record_read_turns)" pkg="rosbag" type="record"
+        args="-o $(arg bag_prefix)
+              -e '(/vicon/.*)|(/dynamixels/.*)'
               /camera1/color/image_raw/compressed
               /camera2/color/image_raw/compressed"
         output="screen"/>
