@@ -5,7 +5,10 @@
     Both cameras sit on USB 2.0 (480M): 720p60 does not fit, 15 fps is what arrives.
     Serials are fixed per physical camera; which one is on which side is unlabelled,
     so check the first image and swap the two serials if needed.
+    camera2 starts camera2_delay s after camera1: started together, the two nodes race for the USB bus
+    and one of them often fails with RS2_USB_STATUS_BUSY and never comes up (2026-10-22, camera1 missing in bags).
   -->
+  <arg name="camera2_delay" default="6"/>
   <arg name="serial1"      default="048122072089"/>
   <arg name="serial2"      default="215322079799"/>
   <arg name="color_width"  default="1280"/>
@@ -21,13 +24,8 @@
     <arg name="color_height" value="$(arg color_height)"/>
     <arg name="color_fps"    value="$(arg color_fps)"/>
   </include>
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <arg name="camera"       value="camera2"/>
-    <arg name="serial_no"    value="$(arg serial2)"/>
-    <arg name="enable_depth" value="false"/>
-    <arg name="enable_infra" value="false"/>
-    <arg name="color_width"  value="$(arg color_width)"/>
-    <arg name="color_height" value="$(arg color_height)"/>
-    <arg name="color_fps"    value="$(arg color_fps)"/>
-  </include>
+  <node name="camera2_launcher" pkg="dynamixel_interface" type="delayed_roslaunch.sh" output="screen"
+        args="$(arg camera2_delay) realsense2_camera rs_camera.launch camera:=camera2 serial_no:=$(arg serial2)
+              enable_depth:=false enable_infra:=false color_width:=$(arg color_width)
+              color_height:=$(arg color_height) color_fps:=$(arg color_fps)"/>
 </launch>
